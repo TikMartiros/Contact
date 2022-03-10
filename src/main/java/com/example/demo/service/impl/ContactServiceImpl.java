@@ -3,6 +3,8 @@ package com.example.demo.service.impl;
 import com.example.demo.model.Contact;
 import com.example.demo.repository.ContactRepository;
 import com.example.demo.service.ContactService;
+import com.example.demo.util.Validation;
+import com.example.demo.util.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,10 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Contact create(Contact contact) {
+
+        if ((!Validator.checkLable(contact.getEmailLabel(), Validation.label)) || (!Validator.checkLable(contact.getPhoneLabel(), Validation.label)) || (!Validator.checkEmail(contact.getEmail(), Validation.regexEmail)) || (!Validator.checkPhone(contact.getPhone(), Validation.regexPhone))){
+            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"wrong Email");
+        }
         return contactRepository.save(contact);
     }
 
@@ -34,6 +40,9 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Transactional
     public Contact update(Contact contact, int id) {
+        if ((!Validator.checkLable(contact.getEmailLabel(), Validation.label)) || (!Validator.checkLable(contact.getPhoneLabel(), Validation.label)) || (!Validator.checkEmail(contact.getEmail(), Validation.regexEmail)) || (!Validator.checkPhone(contact.getPhone(), Validation.regexPhone))){
+            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"wrong Email");
+        }
         Contact fromDb = contactRepository.findById(id).orElseThrow(() -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "wrong ");
         });
